@@ -3,8 +3,11 @@ package controllers
 import (
 	"ArticleSystem/constants"
 	"ArticleSystem/models"
+	bytes2 "bytes"
+	"encoding/gob"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/gomodule/redigo/redis"
 	"math"
 	"path"
 	"strconv"
@@ -50,7 +53,43 @@ func (this *ArticleController) ShowList() {
 
 	//获取文章类型
 	var types []models.ArticleType
-	newOrm.QueryTable("ArticleType").All(&types)
+	conn, e := redis.Dial("tcp", ":6379")
+	if e != nil {
+		beego.Error("redis连接错误")
+		return
+	}
+	defer conn.Close()
+	reply, err2 := conn.Do("get", "types")
+	if reply == nil {
+		newOrm.QueryTable("ArticleType").All(&types)
+		var buffer bytes2.Buffer
+		encoder := gob.NewEncoder(&buffer)
+		encode := encoder.Encode(&types)
+		if encode != nil {
+			beego.Error("encode数据出错")
+			return
+		}
+		_, err3 := conn.Do("set", "types", buffer.Bytes())
+		if err3 != nil {
+			beego.Error("redis序列化数据粗错误")
+			return
+		}
+		beego.Info("从mysql数据库中获取数据了")
+	} else {
+		bytes, i := redis.Bytes(reply, err2)
+		if i != nil {
+			beego.Error("redis获取数据错误", i)
+			return
+		}
+		decoder := gob.NewDecoder(bytes2.NewBuffer(bytes))
+		decode := decoder.Decode(&types)
+		if decode != nil {
+			beego.Error("decode数据错误")
+			return
+		}
+		beego.Info("从redis数据库中获取数据了")
+	}
+
 	this.Data["types"] = types
 
 	//传递数据
