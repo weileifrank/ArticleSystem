@@ -54,6 +54,12 @@ func (this *ArticleController) ShowList() {
 	//获取文章类型
 	var types []models.ArticleType
 	conn, e := redis.Dial("tcp", ":6379")
+	strings, i := redis.Strings(conn.Do("mget", "key1", "key2"))
+	if i != nil {
+		beego.Info("redis.Strings err", i)
+		return
+	}
+	beego.Info("strings:=======================>", strings)
 	if e != nil {
 		beego.Error("redis连接错误")
 		return
