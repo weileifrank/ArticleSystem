@@ -82,7 +82,7 @@ func (this *ArticleController) ShowList() {
 		}
 		beego.Info("从mysql数据库中获取数据了")
 	} else {
-		beego.Info("reply:", reply, "=============err2:", err2)
+		//beego.Info("reply:", reply, "=============err2:", err2)
 		bytes, i := redis.Bytes(reply, err2)
 		if i != nil {
 			beego.Error("redis获取数据错误", i)
@@ -94,6 +94,7 @@ func (this *ArticleController) ShowList() {
 			beego.Error("decode数据错误")
 			return
 		}
+		beego.Info("types:", types)
 		beego.Info("从redis数据库中获取数据了")
 	}
 
