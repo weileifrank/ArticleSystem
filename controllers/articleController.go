@@ -77,11 +77,12 @@ func (this *ArticleController) ShowList() {
 		}
 		_, err3 := conn.Do("set", "types", buffer.Bytes())
 		if err3 != nil {
-			beego.Error("redis序列化数据粗错误")
+			beego.Error("redis序列化数据出错误")
 			return
 		}
 		beego.Info("从mysql数据库中获取数据了")
 	} else {
+		beego.Info("reply:", reply, "=============err2:", err2)
 		bytes, i := redis.Bytes(reply, err2)
 		if i != nil {
 			beego.Error("redis获取数据错误", i)
