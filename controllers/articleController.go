@@ -8,6 +8,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/gomodule/redigo/redis"
+	"github.com/weilaihui/fdfs_client"
 	"math"
 	"path"
 	"strconv"
@@ -158,11 +159,24 @@ func (this *ArticleController) HandleAdd() {
 	}
 	//fileName:=time.Now().Format("2006-01-02-15:04:05")+ext
 	fileName := strconv.FormatInt(time.Now().UnixNano(), 10)
-	toFile := this.SaveToFile("uploadname", "./static/img/"+fileName)
-	if toFile != nil {
-		beego.Error("保存文件出错", toFile)
+	//toFile := this.SaveToFile("uploadname", "./static/img/"+fileName)
+	//if toFile != nil {
+	//	beego.Error("保存文件出错", toFile)
+	//	return
+	//}
+	fileBuffer := make([]byte, header.Size)
+	file.Read(fileBuffer)
+	client, i := fdfs_client.NewFdfsClient("/etc/fdfs/client.conf")
+	if i != nil {
+		beego.Info("fdfs_client.NewFdfsClient err:", i)
 		return
 	}
+	response, i2 := client.UploadByBuffer(fileBuffer, ext[1:])
+	if i2 != nil {
+		beego.Info("client.UploadByBuffer err:", i2)
+		return
+	}
+	beego.Info("response==>", response)
 	newOrm := orm.NewOrm()
 	//获取类型数据
 	typeName := this.GetString("select")
