@@ -177,20 +177,20 @@ func (this *ArticleController) HandleAdd() {
 		return
 	}
 	beego.Info("response==>", response)
-	//newOrm := orm.NewOrm()
-	////获取类型数据
-	//typeName := this.GetString("select")
-	//articleType := models.ArticleType{TypeName: typeName}
-	//read := newOrm.Read(&articleType, "TypeName")
-	//if read != nil {
-	//	beego.Error("查询出错了")
-	//	return
-	//}
-	//_, e := newOrm.Insert(&models.Article{ArtiName: articleName, Acontent: content, Aimg: "/static/img/" + fileName, ArticleType: &articleType})
-	//if e != nil {
-	//	beego.Error("插入博文出错", e)
-	//	return
-	//}
+	newOrm := orm.NewOrm()
+	//获取类型数据
+	typeName := this.GetString("select")
+	articleType := models.ArticleType{TypeName: typeName}
+	read := newOrm.Read(&articleType, "TypeName")
+	if read != nil {
+		beego.Error("查询出错了")
+		return
+	}
+	_, e := newOrm.Insert(&models.Article{ArtiName: articleName, Acontent: content, Aimg: response.RemoteFileId, ArticleType: &articleType})
+	if e != nil {
+		beego.Error("插入博文出错", e)
+		return
+	}
 	this.Redirect(constants.LIST_URL, 302)
 }
 
