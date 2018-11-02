@@ -6,7 +6,6 @@ import (
 	"encoding/base64"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"github.com/gomodule/redigo/redis"
 )
 
 type UserController struct {
@@ -78,16 +77,16 @@ func (this *UserController) HandleLogin() {
 		this.Ctx.SetCookie(constants.COOKIE_USERNAME, userName, -1)
 	}
 	this.SetSession(constants.SESSION_USERNAME, userName)
-	conn, e := redis.Dial("tcp", ":6379")
-	if e != nil {
-		beego.Info("redis.Dial error", e)
-		return
-	}
-	defer conn.Close()
-	_, err := conn.Do("mset", "key1", "value1", "key2", "value2")
-	if err != nil {
-		beego.Error("conn.Do error", err)
-		return
-	}
+	//conn, e := redis.Dial("tcp", ":6379")
+	//if e != nil {
+	//	beego.Info("redis.Dial error", e)
+	//	return
+	//}
+	//defer conn.Close()
+	//_, err := conn.Do("mset", "key1", "value1", "key2", "value2")
+	//if err != nil {
+	//	beego.Error("conn.Do error", err)
+	//	return
+	//}
 	this.Redirect(constants.LIST_URL, 302)
 }
