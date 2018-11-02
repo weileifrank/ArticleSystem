@@ -158,7 +158,7 @@ func (this *ArticleController) HandleAdd() {
 		return
 	}
 	//fileName:=time.Now().Format("2006-01-02-15:04:05")+ext
-	fileName := strconv.FormatInt(time.Now().UnixNano(), 10)
+	//fileName := strconv.FormatInt(time.Now().UnixNano(), 10)
 	//toFile := this.SaveToFile("uploadname", "./static/img/"+fileName)
 	//if toFile != nil {
 	//	beego.Error("保存文件出错", toFile)
@@ -177,20 +177,20 @@ func (this *ArticleController) HandleAdd() {
 		return
 	}
 	beego.Info("response==>", response)
-	newOrm := orm.NewOrm()
-	//获取类型数据
-	typeName := this.GetString("select")
-	articleType := models.ArticleType{TypeName: typeName}
-	read := newOrm.Read(&articleType, "TypeName")
-	if read != nil {
-		beego.Error("查询出错了")
-		return
-	}
-	_, e := newOrm.Insert(&models.Article{ArtiName: articleName, Acontent: content, Aimg: "/static/img/" + fileName, ArticleType: &articleType})
-	if e != nil {
-		beego.Error("插入博文出错", e)
-		return
-	}
+	//newOrm := orm.NewOrm()
+	////获取类型数据
+	//typeName := this.GetString("select")
+	//articleType := models.ArticleType{TypeName: typeName}
+	//read := newOrm.Read(&articleType, "TypeName")
+	//if read != nil {
+	//	beego.Error("查询出错了")
+	//	return
+	//}
+	//_, e := newOrm.Insert(&models.Article{ArtiName: articleName, Acontent: content, Aimg: "/static/img/" + fileName, ArticleType: &articleType})
+	//if e != nil {
+	//	beego.Error("插入博文出错", e)
+	//	return
+	//}
 	this.Redirect(constants.LIST_URL, 302)
 }
 
